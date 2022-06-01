@@ -1,84 +1,89 @@
 console.log("Welcome to Employee wage program.");
 
-//UC8
-const IS_ABSENT = 0;
-const IS_FULL_TIME = 1;
-const IS_PART_TIME = 2;
-const FULL_TIME_HOURS = 8;
+const IS_PART_TIME = 1;
+const IS_FULL_TIME = 2;
 const PART_TIME_HOURS = 4;
+const FULL_TIME_HOURS = 8;
 const WAGE_PER_HOUR = 20;
 const NUM_OF_WORKING_DAYS = 20;
-const MAX_HRS_IN_MONTH = 160;
-const MAX_DAYS_IN_MONTH = 20;
+const MAX_HOURS_IN_MONTH = 160;
 
-function getWorkingHours(empCheck){
-    switch (empCheck){
-        case IS_ABSENT:
-            return 0;
-        
-        case IS_FULL_TIME:
+let totalEmployeeHours = 0;
+let totalWorkingDays = 0;
+let totalEmployeeWage = 0;
+let dayCounter = 0;
 
-            return FULL_TIME_HOURS;
-        
+function getWorkingHours(employeeCheck) {
+
+    switch (employeeCheck) {
+
         case IS_PART_TIME:
+            console.log("Employee works Part Time");
             return PART_TIME_HOURS;
+
+        case IS_FULL_TIME:
+            console.log("Employee works Full Time");
+            return FULL_TIME_HOURS;
+
+        default:
+            console.log("Employee is ABSENT");
+            return 0;
     }
 }
-let empHours = 0;
-let totalWorkingHours = 0;
-let totalWorkingDays = 0;
-let empDailyWageArray = new Array();
-let empDailyWageMap = new Map();
 
-function calculateDailyWage(empHours){
-    return empHours * WAGE_PER_HOUR;
+function calculateDailyWage(employeeHours) {
+    return employeeHours * WAGE_PER_HOUR;
 }
 
-while (totalWorkingDays < MAX_DAYS_IN_MONTH && totalWorkingHours < MAX_HRS_IN_MONTH) {
+let employeeDailyWageArray = new Array();
+let employeeDailyWageMap = new Map();
+let employeeDailyHoursMap = new Map();
+
+while (totalEmployeeHours <= MAX_HOURS_IN_MONTH && totalWorkingDays < NUM_OF_WORKING_DAYS) {
     totalWorkingDays++;
-    let empCheck = Math.floor(Math.random()*10)%3;
-    empHours = getWorkingHours(empCheck);
-    totalWorkingHours = totalWorkingHours + empHours;
-    empDailyWageArray.push(calculateDailyWage(empHours))  //Storing daily wage in array.
-    empDailyWageMap.set(totalWorkingDays, calculateDailyWage(empHours)); //Storing daily wage in a map.
-}
-let empWage = calculateDailyWage(totalWorkingHours);
-console.log("Total Days: "+totalWorkingDays +" Total Hours: "+totalWorkingHours+ " Employee wage: "+ empWage);
-console.log("-----------------------------------------------------------------------------");
-
-console.log(empDailyWageMap);
-function totalWages(totalWage, dailyWage){
-    return totalWage + dailyWage;
+    let employeeCheck = Math.floor(Math.random() * 10) % 3;
+    let employeeHours = getWorkingHours(employeeCheck);
+    totalEmployeeHours += employeeHours;
+    employeeDailyWageArray.push(calculateDailyWage(employeeHours));
+    employeeDailyHoursMap.set(totalWorkingDays, employeeHours);
+    employeeDailyWageMap.set(totalWorkingDays, calculateDailyWage(employeeHours));
 }
 
-console.log("UC 8: Employee Wage map total hours :"+Array.from(empDailyWageMap.values()).reduce(totalWages, 0));
+//USe Case - 9
+const findTotal = (totalValue, dailyValue) => {
+    return totalValue + dailyValue;
+}
+let count = 0;
+let totalHours = Array.from(employeeDailyHoursMap.values()).reduce(findTotal, 0);
+let totalWage = employeeDailyWageArray.filter(dailyWage => dailyWage > 0).reduce(findTotal, 0);
+console.log("Employee Wage Using Arrow Function : \nTotal Hours : " + totalHours + "\nTotal Employee Wage : " + totalWage);
 
-/*
-output:
+let nonWorkingDays = new Array();
+let partTimeWorkingDays = new Array();
+let fullTimeWorkingDays = new Array();
+employeeDailyHoursMap.forEach((value, key) => {
+    if(value == 8)
+        fullTimeWorkingDays.push(key);
+    else if(value == 4){
+        partTimeWorkingDays.push(key);
+    }
+    else
+        nonWorkingDays.push(key);
+});
+
+console.log("Full Working Days : " + fullTimeWorkingDays);
+console.log("Part Working Days : " + partTimeWorkingDays);
+console.log("Non Working Days : " + nonWorkingDays);
+
+
+/*output:
 Welcome to Employee wage program.
-Total Days: 20 Total Hours: 84 Employee wage: 1680
-******************************************************************
-Map(20) {
-  1 => 160,
-  2 => 160,
-  3 => 0,
-  4 => 80,
-  5 => 80,
-  6 => 0,
-  7 => 160,
-  8 => 0,
-  9 => 80,
-  10 => 80,
-  11 => 160,
-  12 => 160,
-  13 => 0,
-  14 => 0,
-  15 => 0,
-  16 => 160,
-  17 => 160,
-  18 => 80,
-  19 => 160,
-  20 => 0
-}
-UC 8: Employee Wage map total hours :1680
+Employee works Part time
+Employee Wage Using Arrow Function :
+Total Hours : 76
+Total Employee Wage : 1520
+Full Working Days : 3,4,8,20
+Part Working Days : 1,6,9,10,11,12,15,16,17,18,19
+Non Working Days : 2,5,7,13,14
+
 */
